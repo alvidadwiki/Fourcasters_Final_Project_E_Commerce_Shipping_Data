@@ -188,3 +188,59 @@ Note: Limiting discounts may seem counterintuitive. However, here are some of th
          **Weight Label Accuracy:** Make sure the accuracy of the weight label on the package is correct. The wrong weight labeling process can result in the selection of an inappropriate transportation method, leading to late delivery (e.g., items with heavy weight labels are shipped using small modes of transportation, and vice versa).
 
 Overall, it is important for businesses to continuously monitor and improve logistics and delivery processes to ensure timely and reliable service to customers. These recommendations should be a starting point for addressing potential problems and optimizing on-time delivery rates.
+
+## Preprocessing
+
+### Data Cleaning
+
+#### Missing Values Inspection
+There is no empty data so we don't need to handle them
+
+#### Duplicates Inspection
+There is no duplicated data so we don't need to handle them
+
+#### Outliers Inspection
+We have several collective outliers in the Discount_offered feature but the outlier values are still appropriate (Discount_offered ranges between 0% to 100%). Hence, we'll not drop any of them because despite outliers, they are still valid observations.
+
+Regarding the Prior_purchases, we see several outliers but all of them still appropriate (6, 7, 8, or 10 prior purchases is still a valid number). Therefore, we'll not drop any of them because despite outliers, they're still valid observations.
+
+#### Class Imbalance Inspection
+The dataset is slightly imbalanced but no further action needed
+
+#### Feature with Multicolinearity Removal
+As a reminder, features that could cause multicollinearity are those with VIF > 10, namely `Cost_of_the_Product` and `Customer_care_calls`.
+
+Despite the high VIF value of `Cost_of_the_Product`, it has better correlation with the target. Hence, we'll remove `Customer_care_calls` instead with lower correlation with the target.
+
+### Feature Creation / Extraction
+
+#### Product Cost Class
+This feature could be a good predictor to `Delivery_status` because as we can see above, the low, medium, and high prouct cost class delivery rate varies, where most deliveries are late in low cost class, followed by medium, and lastly high cost class.
+
+#### Prior Purchases Class
+Low and High prior purchases class is suffering more late deliveries than the medium prior purchase class. We can use this feature as a predictor in the model.
+
+### Feature Encoding
+#### Ordinal Encoding
+We have implemented group in the category data encoding process by creating a custom function called custom_ordinal_encoding. This function accepts column names, dataset, and categories as its input parameters, which allows us to efficiently and consistently perform ordinal encoding on each column that requires transformation, increasing clarity and reducing the risk of errors in the code, as well as maintaining consistency in the mapping of category values "low," "medium," and "high."
+
+### Converting Target back to Integer
+We need to convert the target back to integer type so it can be used by the model.
+
+### Data Splitting
+Here are the variables that we will use in the model:
+1. Numeric
+  - Discount_offered
+  - Weight_in_gms
+2. Categorical: Ordinal
+  - Product_importances
+  - Cost_class
+  - Prior_Purchase_class
+  
+### Feature Transformation (Normalizing the Skewed Distribution)
+`Discount_offered` have a skewed distribution problem. We need to normalize the distribution before stepping into modelling. First, we'll see the minimum value that Discount_offered have so we would know what are the available methods for normalization
+
+Note: As this first section is only inspecting the initial distribution shape and skewness plus benchmarking all the available transformation methods, we'll use the main dataset. Further transformation will be made after benchmark on splitted data.
+
+### Feature Scaling
+We will use StandardScaler as the scaling method because many of the features' initial distribution is approximately normal
